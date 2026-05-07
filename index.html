@@ -84,7 +84,6 @@
             box-shadow: 0 0 15px rgba(100, 255, 218, 0.2); position: relative;
         }
 
-        /* Animazione Errore (Shake) */
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -100,14 +99,9 @@
         }
         .shake-effect { animation: shake 0.5s; animation-iteration-count: 1; border-color: #ff4d4d !important; }
 
-        /* HUD Gioco */
         .game-hud { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #3a506b; padding-bottom: 10px; font-weight: bold; }
-        
-        /* Timer Bar */
         #timer-container { width: 100%; height: 10px; background-color: #0f172a; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
         #timer-bar { height: 100%; width: 100%; background-color: #64ffda; transition: width 0.1s linear, background-color 0.3s; }
-        
-        /* Combo */
         #combo-text { font-size: 1.2em; color: #ffd700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
         
         .question-text { font-size: 1.5em; margin-bottom: 20px; }
@@ -118,17 +112,14 @@
         input[type="text"]:focus { border-color: #64ffda; }
         input[type="text"].fire-mode { border-color: #ff8c00; box-shadow: 0 0 10px rgba(255, 140, 0, 0.5); }
 
-        /* Power Ups */
         .power-ups { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
         .power-btn { background-color: #112240; border: 1px solid #8892b0; color: #8892b0; padding: 8px; font-size: 0.8em; cursor: pointer; border-radius: 4px; text-transform: uppercase; }
         .power-btn:hover:not(:disabled) { border-color: #64ffda; color: #64ffda; }
         .power-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        /* Classifica Sidebar */
         .leaderboard-item { display: flex; justify-content: space-between; background-color: #0f172a; margin-bottom: 8px; padding: 10px; border-left: 3px solid #3a506b; font-size: 0.9em; }
         .leaderboard-item.player { border-left-color: #ffd700; background-color: #1e293b; font-weight: bold; font-size: 1em; color: #ffd700; }
 
-        /* BGM Controls */
         #audio-controls { position: absolute; top: 15px; left: 20px; display: flex; align-items: center; gap: 10px; }
         .icon-btn { background: none; border: 1px solid #64ffda; color: #64ffda; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 0.9em; }
     </style>
@@ -161,6 +152,10 @@
                         <div style="display: flex; gap: 10px;">
                             <button id="play-lesson-btn" class="btn">PLAY</button>
                             <button id="pause-lesson-btn" class="btn">PAUSA</button>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 0.8em; color: #8892b0; text-align: center;">
+                            <strong>Strumento Admin (Invisibile agli studenti):</strong><br>
+                            Mentre il video va, premi <span class="highlight">SPAZIO</span> ogni volta che cambia nazione per registrare il tempo esatto. Alla fine premi <span class="highlight">INVIO</span> per ottenere il codice SRT.
                         </div>
                     </div>
                     <div id="grid-side">
@@ -215,30 +210,66 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // Database con Timeline stimata (gap di ~1.15s per nazione in uno short da 60s)
-        const dbBase = [
-            "Islanda|Reykjavik", "Danimarca|Copenaghen", "Svezia|Stoccolma", "Finlandia|Helsinki", "Norvegia|Oslo",
-            "Regno Unito|Londra", "Belgio|Bruxelles", "Paesi Bassi|Amsterdam", "Lussemburgo|Lussemburgo", "Germania|Berlino",
-            "Svizzera|Berna", "Liechtenstein|Vaduz", "Austria|Vienna", "Slovenia|Lubiana", "Croazia|Zagabria",
-            "Ungheria|Budapest", "Slovacchia|Bratislava", "Repubblica Ceca|Praga", "Polonia|Varsavia", "Lituania|Vilnius",
-            "Estonia|Tallinn", "Lettonia|Riga", "Bielorussia|Minsk", "Russia|Mosca", "Ucraina|Kiev",
-            "Moldavia|Chisinau", "Romania|Bucarest", "Bulgaria|Sofia", "Georgia|Tiblisi", "Armenia|Erevan",
-            "Azerbaigian|Baku", "Turchia|Ankara", "Cipro|Nicosia", "Macedonia del Nord|Skopje", "Grecia|Atene",
-            "Albania|Tirana", "Serbia|Belgrado", "Kosovo|Pristina", "Montenegro|Podgorica", "Bosnia Erzegovina|Sarajevo",
-            "Italia|Roma", "San Marino|San Marino", "Vaticano|Città del Vaticano", "Malta|La Valletta", "Spagna|Madrid",
-            "Portogallo|Lisbona", "Andorra|Andorra la Vella", "Principato di Monaco|Montecarlo", "Francia|Parigi", "Irlanda|Dublino"
+        // ECCO IL DATABASE ESPLICITO: I parametri "time" indicano i secondi esatti. 
+        // Ho inserito dei valori stimati per farti capire la struttura, ma dovrai personalizzarli.
+        const database = [
+            { nazione: "Islanda", capitale: "Reykjavik", time: 1.5 },
+            { nazione: "Danimarca", capitale: "Copenaghen", time: 2.8 },
+            { nazione: "Svezia", capitale: "Stoccolma", time: 4.0 },
+            { nazione: "Finlandia", capitale: "Helsinki", time: 5.2 },
+            { nazione: "Norvegia", capitale: "Oslo", time: 6.5 },
+            { nazione: "Regno Unito", capitale: "Londra", time: 8.0 },
+            { nazione: "Belgio", capitale: "Bruxelles", time: 9.3 },
+            { nazione: "Paesi Bassi", capitale: "Amsterdam", time: 10.5 },
+            { nazione: "Lussemburgo", capitale: "Lussemburgo", time: 11.8 },
+            { nazione: "Germania", capitale: "Berlino", time: 13.0 },
+            { nazione: "Svizzera", capitale: "Berna", time: 14.2 },
+            { nazione: "Liechtenstein", capitale: "Vaduz", time: 15.5 },
+            { nazione: "Austria", capitale: "Vienna", time: 16.8 },
+            { nazione: "Slovenia", capitale: "Lubiana", time: 18.0 },
+            { nazione: "Croazia", capitale: "Zagabria", time: 19.3 },
+            { nazione: "Ungheria", capitale: "Budapest", time: 20.5 },
+            { nazione: "Slovacchia", capitale: "Bratislava", time: 21.8 },
+            { nazione: "Repubblica Ceca", capitale: "Praga", time: 23.0 },
+            { nazione: "Polonia", capitale: "Varsavia", time: 24.2 },
+            { nazione: "Lituania", capitale: "Vilnius", time: 25.5 },
+            { nazione: "Estonia", capitale: "Tallinn", time: 26.8 },
+            { nazione: "Lettonia", capitale: "Riga", time: 28.0 },
+            { nazione: "Bielorussia", capitale: "Minsk", time: 29.3 },
+            { nazione: "Russia", capitale: "Mosca", time: 30.5 },
+            { nazione: "Ucraina", capitale: "Kiev", time: 31.8 },
+            { nazione: "Moldavia", capitale: "Chisinau", time: 33.0 },
+            { nazione: "Romania", capitale: "Bucarest", time: 34.2 },
+            { nazione: "Bulgaria", capitale: "Sofia", time: 35.5 },
+            { nazione: "Georgia", capitale: "Tiblisi", time: 36.8 },
+            { nazione: "Armenia", capitale: "Erevan", time: 38.0 },
+            { nazione: "Azerbaigian", capitale: "Baku", time: 39.3 },
+            { nazione: "Turchia", capitale: "Ankara", time: 40.5 },
+            { nazione: "Cipro", capitale: "Nicosia", time: 41.8 },
+            { nazione: "Macedonia del Nord", capitale: "Skopje", time: 43.0 },
+            { nazione: "Grecia", capitale: "Atene", time: 44.2 },
+            { nazione: "Albania", capitale: "Tirana", time: 45.5 },
+            { nazione: "Serbia", capitale: "Belgrado", time: 46.8 },
+            { nazione: "Kosovo", capitale: "Pristina", time: 48.0 },
+            { nazione: "Montenegro", capitale: "Podgorica", time: 49.3 },
+            { nazione: "Bosnia Erzegovina", capitale: "Sarajevo", time: 50.5 },
+            { nazione: "Italia", capitale: "Roma", time: 51.8 },
+            { nazione: "San Marino", capitale: "San Marino", time: 53.0 },
+            { nazione: "Vaticano", capitale: "Città del Vaticano", time: 54.2 },
+            { nazione: "Malta", capitale: "La Valletta", time: 55.5 },
+            { nazione: "Spagna", capitale: "Madrid", time: 56.8 },
+            { nazione: "Portogallo", capitale: "Lisbona", time: 58.0 },
+            { nazione: "Andorra", capitale: "Andorra la Vella", time: 59.3 },
+            { nazione: "Principato di Monaco", capitale: "Montecarlo", time: 60.5 },
+            { nazione: "Francia", capitale: "Parigi", time: 61.8 },
+            { nazione: "Irlanda", capitale: "Dublino", time: 63.0 }
         ];
-
-        const database = dbBase.map((item, index) => {
-            const parts = item.split('|');
-            return { nazione: parts[0], capitale: parts[1], time: index * 1.15 }; // Timeline generata automaticamente
-        });
 
         // Generazione Griglie
         const syncGrid = document.getElementById('sync-grid');
         const staticGrid = document.getElementById('static-grid');
         
-        // Griglia Sincronizzata (Ordine del video)
+        // Griglia Sincronizzata
         database.forEach((item, i) => {
             const card = document.createElement('div');
             card.className = 'card';
@@ -256,47 +287,29 @@
         });
 
         // Navigazione
-        const views = {
-            studio: document.getElementById('studio-view'),
-            game: document.getElementById('game-view'),
-            review: document.getElementById('review-view')
-        };
-        const navBtns = {
-            studio: document.getElementById('nav-studio'),
-            game: document.getElementById('nav-game'),
-            review: document.getElementById('nav-review')
-        };
+        const views = { studio: document.getElementById('studio-view'), game: document.getElementById('game-view'), review: document.getElementById('review-view') };
+        const navBtns = { studio: document.getElementById('nav-studio'), game: document.getElementById('nav-game'), review: document.getElementById('nav-review') };
 
         function switchView(viewName) {
             Object.values(views).forEach(v => v.style.display = 'none');
             Object.values(navBtns).forEach(b => b.classList.remove('active'));
             views[viewName].style.display = 'flex';
             navBtns[viewName].classList.add('active');
-            
-            // Pausa video se esci dallo studio
-            if(viewName !== 'studio' && lessonPlayer && typeof lessonPlayer.pauseVideo === 'function') {
-                lessonPlayer.pauseVideo();
-            }
+            if(viewName !== 'studio' && lessonPlayer && typeof lessonPlayer.pauseVideo === 'function') lessonPlayer.pauseVideo();
         }
         navBtns.studio.addEventListener('click', () => switchView('studio'));
         navBtns.game.addEventListener('click', () => switchView('game'));
         navBtns.review.addEventListener('click', () => switchView('review'));
 
-        // Gestione Giocatori e Bot
+        // Giocatori e Variabili
         let players = [{ name: "TU (Studente)", score: 0, isPlayer: true }];
         const botNames = ["Bot_Alpha", "GeoMaster", "SysOver", "AtlasX", "NavBot", "EuroTrack", "Glitch", "Cyber", "Quantum", "Vektor", "Byte", "Grid", "Pulse", "Neon", "Scout", "Echo", "LatLong", "Zero", "Muth"];
         botNames.forEach(name => players.push({ name, score: 0, isPlayer: false }));
 
-        // Variabili di Gioco Gamificate
-        let currentIndex = 0;
-        let playerScore = 0;
-        let combo = 0;
-        let shuffledData = [];
-        let botInterval, timerInterval, syncInterval;
-        let timeLeft = 15;
+        let currentIndex = 0, playerScore = 0, combo = 0, timeLeft = 15;
+        let shuffledData = [], botInterval, timerInterval, syncInterval;
         let isScudoActive = false;
 
-        // Elements
         const startGameBtn = document.getElementById('start-game-btn');
         const gameArea = document.getElementById('game-area');
         const countryNameEl = document.getElementById('country-name');
@@ -315,26 +328,24 @@
                 playerVars: { 'controls': 0, 'disablekb': 1, 'fs': 0, 'iv_load_policy': 3, 'modestbranding': 1, 'rel': 0, 'playsinline': 1 }
             });
 
-            // Avvio Sincronizzatore Video-Griglia
             syncInterval = setInterval(() => {
-                if (lessonPlayer && lessonPlayer.getPlayerState && lessonPlayer.getPlayerState() === 1) { // 1 = playing
+                if (lessonPlayer && lessonPlayer.getPlayerState && lessonPlayer.getPlayerState() === 1) { 
                     let time = lessonPlayer.getCurrentTime();
-                    // Trova la nazione attiva
-                    let activeIndex = 0;
+                    let activeIndex = -1;
+                    // Trova l'ultima nazione il cui tempo è stato superato
                     for(let i=0; i<database.length; i++) {
                         if(time >= database[i].time) activeIndex = i;
-                        else break;
                     }
-                    // Rimuovi evidenziatori e metti sul corrente
-                    document.querySelectorAll('#sync-grid .card').forEach(c => c.classList.remove('active-pulse'));
-                    let activeCard = document.getElementById('sync-card-' + activeIndex);
-                    if(activeCard) {
-                        activeCard.classList.add('active-pulse');
-                        // Scrolla la griglia per tenere visibile la card
-                        activeCard.scrollIntoView({ behavior: "smooth", block: "center" });
+                    if(activeIndex >= 0) {
+                        document.querySelectorAll('#sync-grid .card').forEach(c => c.classList.remove('active-pulse'));
+                        let activeCard = document.getElementById('sync-card-' + activeIndex);
+                        if(activeCard) {
+                            activeCard.classList.add('active-pulse');
+                            activeCard.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }
                     }
                 }
-            }, 200); // Check ogni 200ms
+            }, 100);
         }
 
         document.getElementById('play-lesson-btn').addEventListener('click', () => lessonPlayer.playVideo());
@@ -347,7 +358,37 @@
             }
         });
 
-        // --- LOGICA GAMIFICATION ---
+        // --- STRUMENTO ADMIN PER REGISTRARE I TEMPI ---
+        let adminTimes = [];
+        let adminIndex = 0;
+        document.addEventListener('keydown', (e) => {
+            if(views.studio.style.display !== 'none') {
+                // Premi SPAZIO per salvare il tempo
+                if(e.code === 'Space') {
+                    e.preventDefault();
+                    if(lessonPlayer && typeof lessonPlayer.getCurrentTime === 'function') {
+                        let t = lessonPlayer.getCurrentTime().toFixed(1);
+                        adminTimes.push(t);
+                        console.log(`[SRT] Nazione ${adminIndex + 1} registrata a: ${t}s`);
+                        adminIndex++;
+                        // Feedback visivo temporaneo
+                        document.body.style.border = "5px solid #ff8c00";
+                        setTimeout(() => document.body.style.border = "none", 150);
+                    }
+                }
+                // Premi INVIO per estrarre l'array aggiornato
+                if(e.code === 'Enter') {
+                    let output = "Copia questi valori nella proprietà 'time' dell'array database:\n\n";
+                    adminTimes.forEach((t, i) => {
+                        output += `${database[i] ? database[i].nazione : 'Nazione ' + (i+1)}: ${t}s\n`;
+                    });
+                    alert(output);
+                    console.log("TEMPI REGISTRATI:", adminTimes);
+                }
+            }
+        });
+
+        // --- LOGICA GIOCO ---
         startGameBtn.addEventListener('click', () => {
             startGameBtn.style.display = 'none';
             document.getElementById('pre-game-title').style.display = 'none';
@@ -357,12 +398,10 @@
             currentIndex = 0; playerScore = 0; combo = 0;
             players.forEach(p => p.score = 0);
             
-            // Resetta Powerups
             document.querySelectorAll('.power-btn').forEach(btn => btn.disabled = false);
             isScudoActive = false;
-
             if(botInterval) clearInterval(botInterval);
-            botInterval = setInterval(updateBots, 2000); // Bot super veloci
+            botInterval = setInterval(updateBots, 2000);
 
             loadQuestion();
             renderLeaderboard();
@@ -370,28 +409,19 @@
 
         function loadQuestion() {
             if (currentIndex >= shuffledData.length) return endGame();
-            
             countryNameEl.textContent = shuffledData[currentIndex].nazione;
-            answerInput.value = ''; 
-            answerInput.disabled = false; submitBtn.disabled = false;
+            answerInput.value = ''; answerInput.disabled = false; submitBtn.disabled = false;
             answerInput.focus();
             document.getElementById('q-counter').textContent = currentIndex + 1;
             
-            // Start Timer
-            timeLeft = 15;
-            timerBar.style.width = '100%';
-            timerBar.style.backgroundColor = '#64ffda';
+            timeLeft = 15; timerBar.style.width = '100%'; timerBar.style.backgroundColor = '#64ffda';
             if(timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft -= 0.1;
                 let pct = (timeLeft / 15) * 100;
                 timerBar.style.width = Math.max(0, pct) + '%';
-                if(pct < 30) timerBar.style.backgroundColor = '#ff4d4d'; // Diventa rosso
-                
-                if(timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    processAnswer(false, true); // Time out
-                }
+                if(pct < 30) timerBar.style.backgroundColor = '#ff4d4d';
+                if(timeLeft <= 0) { clearInterval(timerInterval); processAnswer(false, true); }
             }, 100);
         }
 
@@ -400,7 +430,7 @@
 
         function processAnswer(userInitiated = true, timeout = false) {
             if(userInitiated && answerInput.value.trim() === '') return;
-            clearInterval(timerInterval); // Ferma il timer
+            clearInterval(timerInterval);
             
             const userAnswer = answerInput.value.trim();
             const correctAnswer = shuffledData[currentIndex].capitale;
@@ -410,29 +440,18 @@
 
             if (isCorrect) {
                 combo++;
-                let multiplier = Math.min(combo, 5); // Max x5
+                let multiplier = Math.min(combo, 5);
                 let earned = 10 * multiplier;
                 playerScore += earned;
-                feedbackEl.textContent = `ESATTO! +${earned} Pts`;
-                feedbackEl.className = "success";
-                
-                if(combo >= 3) {
-                    answerInput.classList.add('fire-mode');
-                    comboText.textContent = `Combo Fuoco: x${multiplier}!`;
-                } else {
-                    comboText.textContent = `Combo: x${multiplier}`;
-                }
+                feedbackEl.textContent = `ESATTO! +${earned} Pts`; feedbackEl.className = "success";
+                if(combo >= 3) { answerInput.classList.add('fire-mode'); comboText.textContent = `Combo Fuoco: x${multiplier}!`; } 
+                else { comboText.textContent = `Combo: x${multiplier}`; }
             } else {
-                combo = 0;
-                playerScore -= 10;
-                answerInput.classList.remove('fire-mode');
-                comboText.textContent = `Combo: x1`;
-                
+                combo = 0; playerScore -= 10;
+                answerInput.classList.remove('fire-mode'); comboText.textContent = `Combo: x1`;
                 let reason = timeout ? "TEMPO SCADUTO." : "ERRORE.";
                 feedbackEl.innerHTML = `${reason} Corretta: <span class="highlight">${correctAnswer}</span>. -10 Pts.`;
                 feedbackEl.className = "error";
-                
-                // Screen Shake feedback!
                 gameArea.classList.add('shake-effect');
                 setTimeout(() => gameArea.classList.remove('shake-effect'), 500);
             }
@@ -440,45 +459,34 @@
             players.find(p => p.isPlayer).score = playerScore;
             document.getElementById('player-score').textContent = playerScore;
             renderLeaderboard();
-
             currentIndex++;
-            setTimeout(() => {
-                feedbackEl.textContent = '';
-                loadQuestion();
-            }, 2000);
+            setTimeout(() => { feedbackEl.textContent = ''; loadQuestion(); }, 2000);
         }
 
         // --- POWER UPS ---
         document.getElementById('pu-scudo').addEventListener('click', function() {
             this.disabled = true; isScudoActive = true;
-            let originalText = this.textContent;
             this.textContent = "ATTIVO..."; this.style.borderColor = "#ffd700"; this.style.color = "#ffd700";
             setTimeout(() => { isScudoActive = false; this.textContent = "SCUDO ESAURITO"; this.style.borderColor = "#555"; this.style.color = "#555"; }, 10000);
         });
-
         document.getElementById('pu-radar').addEventListener('click', function() {
             this.disabled = true;
             let cap = shuffledData[currentIndex].capitale;
             answerInput.value = cap.charAt(0) + ".".repeat(cap.length - 2) + cap.charAt(cap.length - 1);
             answerInput.focus();
         });
-
         document.getElementById('pu-salto').addEventListener('click', function() {
-            this.disabled = true;
-            clearInterval(timerInterval);
-            feedbackEl.textContent = "Salto Quantico eseguito. Nessun punto.";
-            feedbackEl.className = "highlight";
-            currentIndex++;
-            setTimeout(() => { feedbackEl.textContent = ''; loadQuestion(); }, 1500);
+            this.disabled = true; clearInterval(timerInterval);
+            feedbackEl.textContent = "Salto Quantico eseguito. Nessun punto."; feedbackEl.className = "highlight";
+            currentIndex++; setTimeout(() => { feedbackEl.textContent = ''; loadQuestion(); }, 1500);
         });
 
         function updateBots() {
-            if (isScudoActive) return; // Se lo scudo è attivo, i bot non fanno punti
+            if (isScudoActive) return;
             players.forEach(player => {
                 if (!player.isPlayer) {
-                    const rand = Math.random();
-                    if (rand > 0.45) player.score += 10;
-                    else if (rand < 0.15) player.score -= 10;
+                    if (Math.random() > 0.45) player.score += 10;
+                    else if (Math.random() < 0.15) player.score -= 10;
                 }
             });
             renderLeaderboard();
