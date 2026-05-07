@@ -25,459 +25,458 @@
             justify-content: center;
             gap: 20px;
             border-bottom: 2px solid #3a506b;
+            position: relative;
         }
 
         /* Layout Principale */
-        #app-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        #main-area {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
-            overflow-y: auto;
-        }
-        
-        #sidebar {
-            flex: 1;
-            background-color: #112240;
-            border-left: 4px solid #64ffda;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
+        #app-container { display: flex; flex: 1; overflow: hidden; }
+        #main-area { flex: 3; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; }
+        #sidebar { flex: 1; background-color: #112240; border-left: 4px solid #64ffda; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
 
         /* Tipografia e Colori */
-        h1, h2 { color: #64ffda; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
+        h1, h2 { color: #64ffda; text-transform: uppercase; margin-bottom: 15px; text-align: center; }
         .highlight { color: #ffd700; }
         .error { color: #ff4d4d; }
         .success { color: #64ffda; }
 
-        /* Contenitore Video Sicuro */
+        /* Bottoni */
+        .btn {
+            background-color: transparent; color: #64ffda; border: 2px solid #64ffda;
+            padding: 10px 20px; font-family: inherit; font-size: 1em; font-weight: bold;
+            cursor: pointer; transition: all 0.3s; text-transform: uppercase;
+        }
+        .btn:hover:not(:disabled) { background-color: rgba(100, 255, 218, 0.1); }
+        .btn.active { background-color: rgba(100, 255, 218, 0.2); border-color: #ffd700; color: #ffd700; }
+        .btn:disabled { border-color: #555; color: #555; cursor: not-allowed; }
+
+        /* --- FASE DI STUDIO (Layout Side-by-Side) --- */
+        #studio-area { display: flex; width: 100%; max-width: 1400px; gap: 30px; justify-content: center; align-items: flex-start; }
+        #video-side { flex: 1; max-width: 350px; display: flex; flex-direction: column; align-items: center; }
+        #grid-side { flex: 2; height: 75vh; overflow-y: auto; padding-right: 10px; }
+        
         #lesson-video-container {
-            position: relative;
-            width: 100%;
-            max-width: 300px;
-            aspect-ratio: 9 / 16;
-            border: 2px solid #3a506b;
-            background: #000;
-            margin-bottom: 15px;
-            overflow: hidden;
-            border-radius: 8px;
+            position: relative; width: 100%; aspect-ratio: 9 / 16;
+            border: 2px solid #3a506b; background: #000; margin-bottom: 15px;
+            overflow: hidden; border-radius: 8px; box-shadow: 0 0 20px rgba(100, 255, 218, 0.1);
         }
+        .video-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; cursor: default; }
+        #lesson-yt-player { width: 100%; height: 100%; pointer-events: none; }
         
-        .video-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 10;
-            background: transparent;
-            cursor: default;
+        /* Griglia Studio e Ripasso */
+        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
+        .card {
+            background-color: #1e293b; border: 1px solid #3a506b; padding: 12px;
+            border-radius: 6px; text-align: center; transition: all 0.2s;
+        }
+        .card-nazione { color: #8892b0; font-size: 0.8em; text-transform: uppercase; margin-bottom: 5px; }
+        .card-capitale { color: #e2e8f0; font-size: 1.1em; font-weight: bold; }
+        
+        /* Effetto pulsazione video sync */
+        .card.active-pulse {
+            border-color: #ffd700; background-color: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
 
-        #lesson-yt-player {
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .custom-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        /* Area Gioco */
+        /* --- FASE GIOCO --- */
         #game-area {
-            display: none;
-            width: 100%;
-            max-width: 600px;
-            background-color: #1e293b;
-            padding: 30px;
-            border: 1px solid #64ffda;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 0 15px rgba(100, 255, 218, 0.2);
+            display: none; width: 100%; max-width: 600px; background-color: #1e293b;
+            padding: 30px; border: 1px solid #64ffda; border-radius: 8px; text-align: center;
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.2); position: relative;
         }
 
-        .question-text { font-size: 1.5em; margin-bottom: 20px; }
+        /* Animazione Errore (Shake) */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake-effect { animation: shake 0.5s; animation-iteration-count: 1; border-color: #ff4d4d !important; }
+
+        /* HUD Gioco */
+        .game-hud { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #3a506b; padding-bottom: 10px; font-weight: bold; }
         
+        /* Timer Bar */
+        #timer-container { width: 100%; height: 10px; background-color: #0f172a; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background-color: #64ffda; transition: width 0.1s linear, background-color 0.3s; }
+        
+        /* Combo */
+        #combo-text { font-size: 1.2em; color: #ffd700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+        
+        .question-text { font-size: 1.5em; margin-bottom: 20px; }
         input[type="text"] {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.2em;
-            padding: 10px;
-            width: 80%;
-            background-color: #0f172a;
-            border: 1px solid #3a506b;
-            color: #fff;
-            margin-bottom: 20px;
-            outline: none;
-            text-align: center;
+            font-family: 'Courier New', Courier, monospace; font-size: 1.4em; padding: 12px; width: 80%;
+            background-color: #0f172a; border: 2px solid #3a506b; color: #fff; margin-bottom: 20px; text-align: center; outline: none; transition: border-color 0.3s;
         }
         input[type="text"]:focus { border-color: #64ffda; }
+        input[type="text"].fire-mode { border-color: #ff8c00; box-shadow: 0 0 10px rgba(255, 140, 0, 0.5); }
 
-        .btn {
-            background-color: transparent;
-            color: #64ffda;
-            border: 2px solid #64ffda;
-            padding: 12px 24px;
-            font-family: inherit;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-        }
-        .btn:hover { background-color: rgba(100, 255, 218, 0.1); }
-        .btn.active { background-color: rgba(100, 255, 218, 0.2); border-color: #ffd700; color: #ffd700; }
-        .btn-small { padding: 8px 16px; font-size: 0.9em; }
-
-        #feedback { font-size: 1.2em; margin-top: 20px; min-height: 30px; font-weight: bold; }
+        /* Power Ups */
+        .power-ups { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .power-btn { background-color: #112240; border: 1px solid #8892b0; color: #8892b0; padding: 8px; font-size: 0.8em; cursor: pointer; border-radius: 4px; text-transform: uppercase; }
+        .power-btn:hover:not(:disabled) { border-color: #64ffda; color: #64ffda; }
+        .power-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* Classifica Sidebar */
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            background-color: #0f172a;
-            margin-bottom: 8px;
-            padding: 10px;
-            border-left: 3px solid #3a506b;
-            font-size: 0.9em;
-        }
+        .leaderboard-item { display: flex; justify-content: space-between; background-color: #0f172a; margin-bottom: 8px; padding: 10px; border-left: 3px solid #3a506b; font-size: 0.9em; }
         .leaderboard-item.player { border-left-color: #ffd700; background-color: #1e293b; font-weight: bold; font-size: 1em; color: #ffd700; }
-        
-        /* Area Ripasso */
-        #ripasso-area {
-            display: none;
-            width: 100%;
-            max-width: 1000px;
-            padding: 20px;
-        }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            width: 100%;
-        }
-
-        .card {
-            background-color: #1e293b;
-            border: 1px solid #3a506b;
-            padding: 15px;
-            border-radius: 6px;
-            text-align: center;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-        .card:hover {
-            transform: translateY(-3px);
-            border-color: #64ffda;
-        }
-        .card-nazione {
-            color: #8892b0;
-            font-size: 0.85em;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-        .card-capitale {
-            color: #e2e8f0;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        /* Controlli Audio Background */
-        #audio-controls {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .icon-btn {
-            background: none; border: 1px solid #64ffda; color: #64ffda;
-            padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 0.9em;
-        }
+        /* BGM Controls */
+        #audio-controls { position: absolute; top: 15px; left: 20px; display: flex; align-items: center; gap: 10px; }
+        .icon-btn { background: none; border: 1px solid #64ffda; color: #64ffda; padding: 5px 10px; cursor: pointer; font-family: inherit; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
     <div style="display:none;" id="bgm-yt-player"></div>
 
-    <div id="audio-controls">
-        <span style="font-size: 0.9em; color: #8892b0;">BGM [SOTTOFONDO]</span>
-        <button class="icon-btn" id="toggle-audio">ON / OFF</button>
-    </div>
-
     <div id="top-nav">
-        <button id="nav-simulatore" class="btn active">Modulo Simulatore</button>
-        <button id="nav-ripasso" class="btn">Area Ripasso</button>
+        <div id="audio-controls">
+            <span style="font-size: 0.9em; color: #8892b0;">BGM [AUDIO]</span>
+            <button class="icon-btn" id="toggle-audio">OFF</button>
+        </div>
+        <button id="nav-studio" class="btn active">Fase di Studio</button>
+        <button id="nav-game" class="btn">Simulatore Operativo</button>
+        <button id="nav-review" class="btn">Database Completo</button>
     </div>
 
     <div id="app-container">
         <div id="main-area">
-            
-            <div id="sezione-gioco" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-                <h1>Addestramento Operativo</h1>
-                
-                <div id="video-section">
-                    <div id="lesson-video-container">
-                        <div class="video-overlay"></div>
-                        <div id="lesson-yt-player"></div>
-                    </div>
-                    
-                    <div class="custom-controls">
-                        <button id="play-lesson-btn" class="btn btn-small">PLAY VIDEO</button>
-                        <button id="pause-lesson-btn" class="btn btn-small">PAUSA</button>
-                    </div>
-                </div>
-                
-                <button id="start-game-btn" class="btn" style="margin-top: 10px;">Avvia Simulazione Esame</button>
 
-                <div id="game-area">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #3a506b; padding-bottom: 10px;">
-                        <span>Domanda: <span id="q-counter">1</span>/50</span>
-                        <span>Punti: <span id="player-score" class="highlight">0</span></span>
+            <div id="studio-view" style="width: 100%;">
+                <h1>Addestramento: Mappatura Target</h1>
+                <div id="studio-area">
+                    <div id="video-side">
+                        <div id="lesson-video-container">
+                            <div class="video-overlay"></div>
+                            <div id="lesson-yt-player"></div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="play-lesson-btn" class="btn">PLAY</button>
+                            <button id="pause-lesson-btn" class="btn">PAUSA</button>
+                        </div>
                     </div>
-                    
-                    <div class="question-text">Qual è la capitale della <strong id="country-name" class="highlight">---</strong>?</div>
-                    
-                    <input type="text" id="answer-input" placeholder="Digita qui..." autocomplete="off">
-                    <br>
-                    <button id="submit-btn" class="btn">Invia Risposta</button>
-                    
-                    <div id="feedback"></div>
+                    <div id="grid-side">
+                        <div class="grid-container" id="sync-grid"></div>
+                    </div>
                 </div>
             </div>
 
-            <div id="ripasso-area">
-                <h1>Database Capitali Europee</h1>
-                <div class="grid-container" id="ripasso-grid">
+            <div id="game-view" style="display: none; width: 100%; justify-content: center;">
+                <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                    <h1 id="pre-game-title">Pronto all'azione?</h1>
+                    <button id="start-game-btn" class="btn" style="margin-bottom: 20px;">INIZIA MISSIONE</button>
+                    
+                    <div id="game-area">
+                        <div id="timer-container"><div id="timer-bar"></div></div>
+                        
+                        <div class="game-hud">
+                            <span>Q: <span id="q-counter">1</span>/50</span>
+                            <span id="combo-text">Combo: x1</span>
+                            <span>Score: <span id="player-score" class="highlight">0</span></span>
+                        </div>
+                        
+                        <div class="question-text">Target: <strong id="country-name" class="highlight">---</strong></div>
+                        
+                        <input type="text" id="answer-input" placeholder="Digita capitale..." autocomplete="off">
+                        <br>
+                        <button id="submit-btn" class="btn">INVIA DATI</button>
+                        
+                        <div class="power-ups">
+                            <button class="power-btn" id="pu-scudo">Scudo Bot (10s)</button>
+                            <button class="power-btn" id="pu-radar">Radar Lettere</button>
+                            <button class="power-btn" id="pu-salto">Salto Quantico</button>
+                        </div>
+                        
+                        <div id="feedback" style="margin-top: 15px; font-weight: bold; min-height: 25px;"></div>
                     </div>
+                </div>
+            </div>
+
+            <div id="review-view" style="display: none; width: 100%;">
+                <h1>Database Ordinato</h1>
+                <div class="grid-container" id="static-grid" style="max-width: 1000px; margin: 0 auto;"></div>
             </div>
 
         </div>
 
         <div id="sidebar">
-            <h2>Live Ranking</h2>
+            <h2>Classifica Globale</h2>
             <div id="leaderboard-container"></div>
         </div>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        const database = [
-            { nazione: "Islanda", capitale: "Reykjavik" }, { nazione: "Danimarca", capitale: "Copenaghen" },
-            { nazione: "Svezia", capitale: "Stoccolma" }, { nazione: "Finlandia", capitale: "Helsinki" },
-            { nazione: "Norvegia", capitale: "Oslo" }, { nazione: "Regno Unito", capitale: "Londra" },
-            { nazione: "Belgio", capitale: "Bruxelles" }, { nazione: "Paesi Bassi", capitale: "Amsterdam" },
-            { nazione: "Lussemburgo", capitale: "Lussemburgo" }, { nazione: "Germania", capitale: "Berlino" },
-            { nazione: "Svizzera", capitale: "Berna" }, { nazione: "Liechtenstein", capitale: "Vaduz" },
-            { nazione: "Austria", capitale: "Vienna" }, { nazione: "Slovenia", capitale: "Lubiana" },
-            { nazione: "Croazia", capitale: "Zagabria" }, { nazione: "Ungheria", capitale: "Budapest" },
-            { nazione: "Slovacchia", capitale: "Bratislava" }, { nazione: "Repubblica Ceca", capitale: "Praga" },
-            { nazione: "Polonia", capitale: "Varsavia" }, { nazione: "Lituania", capitale: "Vilnius" },
-            { nazione: "Estonia", capitale: "Tallinn" }, { nazione: "Lettonia", capitale: "Riga" },
-            { nazione: "Bielorussia", capitale: "Minsk" }, { nazione: "Russia", capitale: "Mosca" },
-            { nazione: "Ucraina", capitale: "Kiev" }, { nazione: "Moldavia", capitale: "Chisinau" },
-            { nazione: "Romania", capitale: "Bucarest" }, { nazione: "Bulgaria", capitale: "Sofia" },
-            { nazione: "Georgia", capitale: "Tiblisi" }, { nazione: "Armenia", capitale: "Erevan" },
-            { nazione: "Azerbaigian", capitale: "Baku" }, { nazione: "Turchia", capitale: "Ankara" },
-            { nazione: "Cipro", capitale: "Nicosia" }, { nazione: "Macedonia del Nord", capitale: "Skopje" },
-            { nazione: "Grecia", capitale: "Atene" }, { nazione: "Albania", capitale: "Tirana" },
-            { nazione: "Serbia", capitale: "Belgrado" }, { nazione: "Kosovo", capitale: "Pristina" },
-            { nazione: "Montenegro", capitale: "Podgorica" }, { nazione: "Bosnia Erzegovina", capitale: "Sarajevo" },
-            { nazione: "Italia", capitale: "Roma" }, { nazione: "San Marino", capitale: "San Marino" },
-            { nazione: "Vaticano", capitale: "Città del Vaticano" }, { nazione: "Malta", capitale: "La Valletta" },
-            { nazione: "Spagna", capitale: "Madrid" }, { nazione: "Portogallo", capitale: "Lisbona" },
-            { nazione: "Andorra", capitale: "Andorra la Vella" }, { nazione: "Principato di Monaco", capitale: "Montecarlo" },
-            { nazione: "Francia", capitale: "Parigi" }, { nazione: "Irlanda", capitale: "Dublino" }
+        // Database con Timeline stimata (gap di ~1.15s per nazione in uno short da 60s)
+        const dbBase = [
+            "Islanda|Reykjavik", "Danimarca|Copenaghen", "Svezia|Stoccolma", "Finlandia|Helsinki", "Norvegia|Oslo",
+            "Regno Unito|Londra", "Belgio|Bruxelles", "Paesi Bassi|Amsterdam", "Lussemburgo|Lussemburgo", "Germania|Berlino",
+            "Svizzera|Berna", "Liechtenstein|Vaduz", "Austria|Vienna", "Slovenia|Lubiana", "Croazia|Zagabria",
+            "Ungheria|Budapest", "Slovacchia|Bratislava", "Repubblica Ceca|Praga", "Polonia|Varsavia", "Lituania|Vilnius",
+            "Estonia|Tallinn", "Lettonia|Riga", "Bielorussia|Minsk", "Russia|Mosca", "Ucraina|Kiev",
+            "Moldavia|Chisinau", "Romania|Bucarest", "Bulgaria|Sofia", "Georgia|Tiblisi", "Armenia|Erevan",
+            "Azerbaigian|Baku", "Turchia|Ankara", "Cipro|Nicosia", "Macedonia del Nord|Skopje", "Grecia|Atene",
+            "Albania|Tirana", "Serbia|Belgrado", "Kosovo|Pristina", "Montenegro|Podgorica", "Bosnia Erzegovina|Sarajevo",
+            "Italia|Roma", "San Marino|San Marino", "Vaticano|Città del Vaticano", "Malta|La Valletta", "Spagna|Madrid",
+            "Portogallo|Lisbona", "Andorra|Andorra la Vella", "Principato di Monaco|Montecarlo", "Francia|Parigi", "Irlanda|Dublino"
         ];
 
-        // Creazione Bot: 1 Studente + 19 Bots = 20 Giocatori
-        let players = [{ name: "TU (Studente)", score: 0, isPlayer: true }];
-        const botNames = [
-            "Bot_Alpha99", "GeoMaster", "SysOverride", "AtlasCore", "NavSystem",
-            "EuroTracker", "MapGlitch", "CyberGeo", "QuantumPin", "VektorX",
-            "TerraByte", "GridWalker", "Pulse9", "NeonCompass", "DataScout",
-            "EchoLoc", "LatLongBot", "MeridianZero", "AziMuth"
-        ];
-        botNames.forEach(name => players.push({ name: name, score: 0, isPlayer: false }));
-
-        let currentIndex = 0;
-        let playerScore = 0;
-        let shuffledData = [];
-        let botInterval;
-
-        // --- NAVIGAZIONE ---
-        const btnSimulatore = document.getElementById('nav-simulatore');
-        const btnRipasso = document.getElementById('nav-ripasso');
-        const sezioneGioco = document.getElementById('sezione-gioco');
-        const sezioneRipasso = document.getElementById('ripasso-area');
-
-        btnSimulatore.addEventListener('click', () => {
-            btnSimulatore.classList.add('active');
-            btnRipasso.classList.remove('active');
-            sezioneGioco.style.display = 'flex';
-            sezioneRipasso.style.display = 'none';
+        const database = dbBase.map((item, index) => {
+            const parts = item.split('|');
+            return { nazione: parts[0], capitale: parts[1], time: index * 1.15 }; // Timeline generata automaticamente
         });
 
-        btnRipasso.addEventListener('click', () => {
-            btnRipasso.classList.add('active');
-            btnSimulatore.classList.remove('active');
-            sezioneRipasso.style.display = 'block';
-            sezioneGioco.style.display = 'none';
-        });
-
-        // --- GENERAZIONE GRIGLIA RIPASSO ---
-        const ripassoGrid = document.getElementById('ripasso-grid');
-        // Ordiniamo alfabeticamente il database per il ripasso per facilitare lo studio
-        const sortedDatabase = [...database].sort((a, b) => a.nazione.localeCompare(b.nazione));
-        sortedDatabase.forEach(item => {
+        // Generazione Griglie
+        const syncGrid = document.getElementById('sync-grid');
+        const staticGrid = document.getElementById('static-grid');
+        
+        // Griglia Sincronizzata (Ordine del video)
+        database.forEach((item, i) => {
             const card = document.createElement('div');
             card.className = 'card';
-            card.innerHTML = `
-                <div class="card-nazione">${item.nazione}</div>
-                <div class="card-capitale">${item.capitale}</div>
-            `;
-            ripassoGrid.appendChild(card);
+            card.id = 'sync-card-' + i;
+            card.innerHTML = `<div class="card-nazione">${item.nazione}</div><div class="card-capitale">${item.capitale}</div>`;
+            syncGrid.appendChild(card);
         });
 
-        // --- GESTIONE VIDEO YOUTUBE (API) ---
-        let bgmPlayer;
-        let lessonPlayer;
-
-        function onYouTubeIframeAPIReady() {
-            bgmPlayer = new YT.Player('bgm-yt-player', {
-                height: '0', width: '0', videoId: 'zvIbm-TvQJk',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'zvIbm-TvQJk' }
-            });
-
-            lessonPlayer = new YT.Player('lesson-yt-player', {
-                videoId: 'mtYLhvSb1v8',
-                playerVars: {
-                    'controls': 0, 'disablekb': 1, 'fs': 0, 'iv_load_policy': 3,
-                    'modestbranding': 1, 'rel': 0, 'playsinline': 1
-                }
-            });
-        }
-
-        document.getElementById('play-lesson-btn').addEventListener('click', () => {
-            if (lessonPlayer && typeof lessonPlayer.playVideo === 'function') lessonPlayer.playVideo();
-        });
-        document.getElementById('pause-lesson-btn').addEventListener('click', () => {
-            if (lessonPlayer && typeof lessonPlayer.pauseVideo === 'function') lessonPlayer.pauseVideo();
+        // Griglia Ripasso (Ordine Alfabetico)
+        [...database].sort((a,b) => a.nazione.localeCompare(b.nazione)).forEach((item) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `<div class="card-nazione">${item.nazione}</div><div class="card-capitale">${item.capitale}</div>`;
+            staticGrid.appendChild(card);
         });
 
-        document.getElementById('toggle-audio').addEventListener('click', function() {
-            if (!bgmPlayer || typeof bgmPlayer.getPlayerState !== 'function') return;
-            const state = bgmPlayer.getPlayerState();
-            if (state === 1) {
-                bgmPlayer.pauseVideo();
-                this.style.borderColor = '#64ffda'; this.style.color = '#64ffda';
-            } else {
-                bgmPlayer.playVideo();
-                this.style.borderColor = '#ff4d4d'; this.style.color = '#ff4d4d';
+        // Navigazione
+        const views = {
+            studio: document.getElementById('studio-view'),
+            game: document.getElementById('game-view'),
+            review: document.getElementById('review-view')
+        };
+        const navBtns = {
+            studio: document.getElementById('nav-studio'),
+            game: document.getElementById('nav-game'),
+            review: document.getElementById('nav-review')
+        };
+
+        function switchView(viewName) {
+            Object.values(views).forEach(v => v.style.display = 'none');
+            Object.values(navBtns).forEach(b => b.classList.remove('active'));
+            views[viewName].style.display = 'flex';
+            navBtns[viewName].classList.add('active');
+            
+            // Pausa video se esci dallo studio
+            if(viewName !== 'studio' && lessonPlayer && typeof lessonPlayer.pauseVideo === 'function') {
+                lessonPlayer.pauseVideo();
             }
-        });
+        }
+        navBtns.studio.addEventListener('click', () => switchView('studio'));
+        navBtns.game.addEventListener('click', () => switchView('game'));
+        navBtns.review.addEventListener('click', () => switchView('review'));
 
-        // --- LOGICA DI GIOCO ---
+        // Gestione Giocatori e Bot
+        let players = [{ name: "TU (Studente)", score: 0, isPlayer: true }];
+        const botNames = ["Bot_Alpha", "GeoMaster", "SysOver", "AtlasX", "NavBot", "EuroTrack", "Glitch", "Cyber", "Quantum", "Vektor", "Byte", "Grid", "Pulse", "Neon", "Scout", "Echo", "LatLong", "Zero", "Muth"];
+        botNames.forEach(name => players.push({ name, score: 0, isPlayer: false }));
+
+        // Variabili di Gioco Gamificate
+        let currentIndex = 0;
+        let playerScore = 0;
+        let combo = 0;
+        let shuffledData = [];
+        let botInterval, timerInterval, syncInterval;
+        let timeLeft = 15;
+        let isScudoActive = false;
+
+        // Elements
         const startGameBtn = document.getElementById('start-game-btn');
         const gameArea = document.getElementById('game-area');
-        const videoSection = document.getElementById('video-section');
         const countryNameEl = document.getElementById('country-name');
         const answerInput = document.getElementById('answer-input');
         const submitBtn = document.getElementById('submit-btn');
         const feedbackEl = document.getElementById('feedback');
-        const scoreEl = document.getElementById('player-score');
-        const qCounterEl = document.getElementById('q-counter');
-        const leaderboardContainer = document.getElementById('leaderboard-container');
+        const timerBar = document.getElementById('timer-bar');
+        const comboText = document.getElementById('combo-text');
+        
+        // --- YOUTUBE API & SYNC ---
+        let bgmPlayer, lessonPlayer;
+        function onYouTubeIframeAPIReady() {
+            bgmPlayer = new YT.Player('bgm-yt-player', { height: '0', width: '0', videoId: 'zvIbm-TvQJk', playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'zvIbm-TvQJk' } });
+            lessonPlayer = new YT.Player('lesson-yt-player', {
+                videoId: 'mtYLhvSb1v8',
+                playerVars: { 'controls': 0, 'disablekb': 1, 'fs': 0, 'iv_load_policy': 3, 'modestbranding': 1, 'rel': 0, 'playsinline': 1 }
+            });
 
-        function shuffleArray(array) {
-            let curId = array.length;
-            while (0 !== curId) {
-                let randId = Math.floor(Math.random() * curId);
-                curId -= 1;
-                let tmp = array[curId]; array[curId] = array[randId]; array[randId] = tmp;
-            }
-            return array;
+            // Avvio Sincronizzatore Video-Griglia
+            syncInterval = setInterval(() => {
+                if (lessonPlayer && lessonPlayer.getPlayerState && lessonPlayer.getPlayerState() === 1) { // 1 = playing
+                    let time = lessonPlayer.getCurrentTime();
+                    // Trova la nazione attiva
+                    let activeIndex = 0;
+                    for(let i=0; i<database.length; i++) {
+                        if(time >= database[i].time) activeIndex = i;
+                        else break;
+                    }
+                    // Rimuovi evidenziatori e metti sul corrente
+                    document.querySelectorAll('#sync-grid .card').forEach(c => c.classList.remove('active-pulse'));
+                    let activeCard = document.getElementById('sync-card-' + activeIndex);
+                    if(activeCard) {
+                        activeCard.classList.add('active-pulse');
+                        // Scrolla la griglia per tenere visibile la card
+                        activeCard.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                }
+            }, 200); // Check ogni 200ms
         }
 
+        document.getElementById('play-lesson-btn').addEventListener('click', () => lessonPlayer.playVideo());
+        document.getElementById('pause-lesson-btn').addEventListener('click', () => lessonPlayer.pauseVideo());
+        document.getElementById('toggle-audio').addEventListener('click', function() {
+            if (bgmPlayer.getPlayerState() === 1) {
+                bgmPlayer.pauseVideo(); this.style.borderColor = '#64ffda'; this.style.color = '#64ffda'; this.textContent = "OFF";
+            } else {
+                bgmPlayer.playVideo(); this.style.borderColor = '#ff4d4d'; this.style.color = '#ff4d4d'; this.textContent = "ON";
+            }
+        });
+
+        // --- LOGICA GAMIFICATION ---
         startGameBtn.addEventListener('click', () => {
-            if (lessonPlayer && typeof lessonPlayer.pauseVideo === 'function') lessonPlayer.pauseVideo();
-            
-            shuffledData = shuffleArray([...database]);
-            currentIndex = 0; playerScore = 0;
-            players.forEach(p => p.score = 0);
-            
             startGameBtn.style.display = 'none';
-            videoSection.style.display = 'none';
+            document.getElementById('pre-game-title').style.display = 'none';
             gameArea.style.display = 'block';
             
-            if(botInterval) clearInterval(botInterval);
-            // I bot si aggiornano più rapidamente ora per dare sensazione di frenesia (ogni 2.5 secondi)
-            botInterval = setInterval(updateBots, 2500);
+            shuffledData = [...database].sort(() => Math.random() - 0.5);
+            currentIndex = 0; playerScore = 0; combo = 0;
+            players.forEach(p => p.score = 0);
             
+            // Resetta Powerups
+            document.querySelectorAll('.power-btn').forEach(btn => btn.disabled = false);
+            isScudoActive = false;
+
+            if(botInterval) clearInterval(botInterval);
+            botInterval = setInterval(updateBots, 2000); // Bot super veloci
+
             loadQuestion();
             renderLeaderboard();
         });
 
         function loadQuestion() {
-            if (currentIndex >= shuffledData.length) {
-                clearInterval(botInterval);
-                gameArea.innerHTML = `<h2>Simulazione Completata!</h2><p>Punteggio Finale: <span class="highlight">${playerScore}</span></p>`;
-                return;
-            }
-            const currentItem = shuffledData[currentIndex];
-            countryNameEl.textContent = currentItem.nazione;
-            answerInput.value = ''; answerInput.focus();
-            qCounterEl.textContent = currentIndex + 1;
+            if (currentIndex >= shuffledData.length) return endGame();
+            
+            countryNameEl.textContent = shuffledData[currentIndex].nazione;
+            answerInput.value = ''; 
+            answerInput.disabled = false; submitBtn.disabled = false;
+            answerInput.focus();
+            document.getElementById('q-counter').textContent = currentIndex + 1;
+            
+            // Start Timer
+            timeLeft = 15;
+            timerBar.style.width = '100%';
+            timerBar.style.backgroundColor = '#64ffda';
+            if(timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                let pct = (timeLeft / 15) * 100;
+                timerBar.style.width = Math.max(0, pct) + '%';
+                if(pct < 30) timerBar.style.backgroundColor = '#ff4d4d'; // Diventa rosso
+                
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    processAnswer(false, true); // Time out
+                }
+            }, 100);
         }
 
-        submitBtn.addEventListener('click', checkAnswer);
-        answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+        submitBtn.addEventListener('click', () => processAnswer());
+        answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') processAnswer(); });
 
-        function checkAnswer() {
-            if(answerInput.value.trim() === '') return;
+        function processAnswer(userInitiated = true, timeout = false) {
+            if(userInitiated && answerInput.value.trim() === '') return;
+            clearInterval(timerInterval); // Ferma il timer
             
             const userAnswer = answerInput.value.trim();
             const correctAnswer = shuffledData[currentIndex].capitale;
+            let isCorrect = userAnswer === correctAnswer && !timeout;
 
-            if (userAnswer === correctAnswer) {
-                playerScore += 10;
-                feedbackEl.textContent = "CORRETTO! +10 Punti";
+            answerInput.disabled = true; submitBtn.disabled = true;
+
+            if (isCorrect) {
+                combo++;
+                let multiplier = Math.min(combo, 5); // Max x5
+                let earned = 10 * multiplier;
+                playerScore += earned;
+                feedbackEl.textContent = `ESATTO! +${earned} Pts`;
                 feedbackEl.className = "success";
+                
+                if(combo >= 3) {
+                    answerInput.classList.add('fire-mode');
+                    comboText.textContent = `Combo Fuoco: x${multiplier}!`;
+                } else {
+                    comboText.textContent = `Combo: x${multiplier}`;
+                }
             } else {
+                combo = 0;
                 playerScore -= 10;
-                feedbackEl.innerHTML = `ERRORE. Sintassi corretta: <span class="highlight">${correctAnswer}</span>. Penalità: -10 Pts.`;
+                answerInput.classList.remove('fire-mode');
+                comboText.textContent = `Combo: x1`;
+                
+                let reason = timeout ? "TEMPO SCADUTO." : "ERRORE.";
+                feedbackEl.innerHTML = `${reason} Corretta: <span class="highlight">${correctAnswer}</span>. -10 Pts.`;
                 feedbackEl.className = "error";
+                
+                // Screen Shake feedback!
+                gameArea.classList.add('shake-effect');
+                setTimeout(() => gameArea.classList.remove('shake-effect'), 500);
             }
 
             players.find(p => p.isPlayer).score = playerScore;
-            scoreEl.textContent = playerScore;
+            document.getElementById('player-score').textContent = playerScore;
             renderLeaderboard();
 
             currentIndex++;
-            answerInput.disabled = true; submitBtn.disabled = true;
-            
             setTimeout(() => {
                 feedbackEl.textContent = '';
-                answerInput.disabled = false; submitBtn.disabled = false;
                 loadQuestion();
-            }, 2500);
+            }, 2000);
         }
 
+        // --- POWER UPS ---
+        document.getElementById('pu-scudo').addEventListener('click', function() {
+            this.disabled = true; isScudoActive = true;
+            let originalText = this.textContent;
+            this.textContent = "ATTIVO..."; this.style.borderColor = "#ffd700"; this.style.color = "#ffd700";
+            setTimeout(() => { isScudoActive = false; this.textContent = "SCUDO ESAURITO"; this.style.borderColor = "#555"; this.style.color = "#555"; }, 10000);
+        });
+
+        document.getElementById('pu-radar').addEventListener('click', function() {
+            this.disabled = true;
+            let cap = shuffledData[currentIndex].capitale;
+            answerInput.value = cap.charAt(0) + ".".repeat(cap.length - 2) + cap.charAt(cap.length - 1);
+            answerInput.focus();
+        });
+
+        document.getElementById('pu-salto').addEventListener('click', function() {
+            this.disabled = true;
+            clearInterval(timerInterval);
+            feedbackEl.textContent = "Salto Quantico eseguito. Nessun punto.";
+            feedbackEl.className = "highlight";
+            currentIndex++;
+            setTimeout(() => { feedbackEl.textContent = ''; loadQuestion(); }, 1500);
+        });
+
         function updateBots() {
+            if (isScudoActive) return; // Se lo scudo è attivo, i bot non fanno punti
             players.forEach(player => {
                 if (!player.isPlayer) {
                     const rand = Math.random();
-                    // Leggera diversificazione del comportamento dei bot per renderlo più realistico
                     if (rand > 0.45) player.score += 10;
                     else if (rand < 0.15) player.score -= 10;
                 }
@@ -487,13 +486,30 @@
 
         function renderLeaderboard() {
             players.sort((a, b) => b.score - a.score);
-            leaderboardContainer.innerHTML = '';
+            let lc = document.getElementById('leaderboard-container');
+            lc.innerHTML = '';
             players.forEach((player, index) => {
                 const div = document.createElement('div');
                 div.className = `leaderboard-item ${player.isPlayer ? 'player' : ''}`;
-                div.innerHTML = `<span>${index + 1}. ${player.name}</span><span>${player.score} PTS</span>`;
-                leaderboardContainer.appendChild(div);
+                div.innerHTML = `<span>${index + 1}. ${player.name}</span><span>${player.score}</span>`;
+                lc.appendChild(div);
             });
+        }
+
+        function endGame() {
+            clearInterval(botInterval);
+            let rank = "Turista Smarrito";
+            if(playerScore > 200) rank = "Esploratore";
+            if(playerScore > 400) rank = "Agente Operativo";
+            if(playerScore > 600) rank = "Sovrano della Geografia";
+
+            gameArea.innerHTML = `
+                <h2>SIMULAZIONE TERMINATA</h2>
+                <p style="font-size: 1.5em; margin: 20px 0;">Punti totali: <span class="highlight">${playerScore}</span></p>
+                <p style="font-size: 1.2em;">Grado Assegnato:</p>
+                <h1 style="color: #ffd700;">${rank}</h1>
+                <button class="btn" onclick="location.reload()" style="margin-top:20px;">Riprova Missione</button>
+            `;
         }
 
         renderLeaderboard();
